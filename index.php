@@ -12,6 +12,8 @@
 <h1>Agents Coverage Tool</h1>
 <br/><br/><br/>
 <?php
+
+/* Made by Eytan */
 error_reporting(E_ALL ^ E_DEPRECATED);
 
 
