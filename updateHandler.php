@@ -2,7 +2,8 @@
 error_reporting(E_ALL ^ E_DEPRECATED);
 
 /****UPDATE COVERAGE MATRIX PAGE HANDLER!****/
-
+//var_dump($_POST);
+ini_set('max_execution_time', 300);
 
 if( isset($_POST['os']) and isset($_POST['db']) and isset($_POST['feature']) and isset($_POST['mode']) and isset($_POST['conn']) and isset($_POST['version']) and isset($_POST['comment']))
 {
@@ -22,17 +23,45 @@ if( isset($_POST['os']) and isset($_POST['db']) and isset($_POST['feature']) and
 					{
 						foreach($_POST['conn'] as $connElement)
 						{
-												
-							$query = 'insert into coverage_table(OS_ID, DB_ID, FEATURE_ID, MODE_ID, CONNTYPE_ID, AGENT_VERSION_ID, comment) values (
-							' . mysql_escape_string($osElement) . ',
-							' . mysql_escape_string($dbElement) . ',
-							' . mysql_escape_string($featureElement) . ',
-							' . mysql_escape_string($modeElement) . ',
-							' . mysql_escape_string($connElement) . ',
-							' . mysql_escape_string($versionElement) . ',
-							"' . mysql_escape_string($_POST["comment"]) . '")';
-						//	echo "$query\n";
-							$result = mysql_query($query) or die('Query failed: ' . mysql_error());
+							$isExistQuery = 'select comment from coverage_table where 
+							OS_ID = ' . mysql_escape_string($osElement) . ' AND
+							DB_ID = ' . mysql_escape_string($dbElement) . ' AND
+							FEATURE_ID = ' . mysql_escape_string($featureElement) . ' AND
+							MODE_ID = ' . mysql_escape_string($modeElement) . ' AND
+							CONNTYPE_ID = ' . mysql_escape_string($connElement) . ' AND
+							AGENT_VERSION_ID = ' . mysql_escape_string($versionElement);
+							
+							$existingElement = mysql_query($isExistQuery) or die('Query failed: ' . mysql_error());
+							
+							if (mysql_num_rows($existingElement) == 0)
+							{
+								$query = 'insert into coverage_table(OS_ID, DB_ID, FEATURE_ID, MODE_ID, CONNTYPE_ID, AGENT_VERSION_ID, comment) values (
+								' . mysql_escape_string($osElement) . ',
+								' . mysql_escape_string($dbElement) . ',
+								' . mysql_escape_string($featureElement) . ',
+								' . mysql_escape_string($modeElement) . ',
+								' . mysql_escape_string($connElement) . ',
+								' . mysql_escape_string($versionElement) . ',
+								"' . mysql_escape_string($_POST["comment"]) . '")';
+//								echo "$query";
+								$result = mysql_query($query) or die('Query failed: ' . mysql_error());
+							}
+							else
+							{
+								$existingComment = mysql_fetch_assoc($existingElement)["comment"];
+								$query = 'update coverage_table set comment = "' . mysql_escape_string($existingComment) . '\n'
+									. mysql_escape_string($_POST["comment"]) . '"
+									where OS_ID = ' . mysql_escape_string($osElement) . ' AND
+										DB_ID = ' . mysql_escape_string($dbElement) . ' AND
+										FEATURE_ID = ' . mysql_escape_string($featureElement) . ' AND
+										MODE_ID = ' . mysql_escape_string($modeElement) . ' AND
+										CONNTYPE_ID = ' . mysql_escape_string($connElement) . ' AND
+										AGENT_VERSION_ID = ' . mysql_escape_string($versionElement);
+									
+//								echo "$query";
+								$result = mysql_query($query) or die('Query failed: ' . mysql_error());
+							}
+							
 						}
 					}
 				}
@@ -40,6 +69,15 @@ if( isset($_POST['os']) and isset($_POST['db']) and isset($_POST['feature']) and
 		}
 	}
 
+	// Closing connection
+	mysql_close($link);
+}
+else
+{
+	var_dump($_POST);
+
+
+	echo "What??";
 }
 
 /* Redirect to original form */

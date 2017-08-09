@@ -1,22 +1,8 @@
-<html>
-<head>
-<link rel="stylesheet" type="text/css" href="2nd.css">
-<link rel="stylesheet" type="text/css" href="jordyvanraaij.css">
-</head>
-<body align="center">
-
-<div class="form-style-5">
-
-
-<br/>
-<h1>Agents Coverage Tool</h1>
-<br/><br/><br/>
 <?php
+require 'common.php';
 
-/* Made by Eytan */
-error_reporting(E_ALL ^ E_DEPRECATED);
-
-
+databaseAttach();
+createHtmlProlog();
 
 if( isset($_POST['version']))
 {
@@ -51,14 +37,6 @@ else
 	$default_feature = 1;
 }
 
-// Connecting, selecting database
-//phpinfo();
-
-//$link = mysql_connect('localhost', 'root', 'root12')
-$link = mysql_connect('10.100.43.225:3306', 'root', 'barbapapa')
-    or die('Could not connect: ' . mysql_error());
-mysql_select_db('coverage') or die('Could not select database');
-
 /***********************************OS***************************************/
 // Performing SQL query
 $query = 'SELECT * FROM coverage.agent_version_table order by id;';
@@ -70,7 +48,8 @@ $dbResult = mysql_query($query) or die('Query failed: ' . mysql_error());
 $query = 'SELECT * FROM coverage.feature_table order by id;';
 $ftrResult = mysql_query($query) or die('Query failed: ' . mysql_error());
 
-?><form method="post" action="index.php">
+?>
+<form method="post" action="index.php">
 <table align="center">
 <tr>
 <td>
@@ -134,16 +113,8 @@ echo "</select>\n";
 <input style="width:15%" align="center" type="submit" name="submit" value="Check"></form>
 <?php
 
-
-// Closing connection
-mysql_close($link);
-
 if( isset($_POST['os']) and isset($_POST['db']) and isset($_POST['feature']))
 {
-	$link = mysql_connect('10.100.43.225', 'root', 'barbapapa')
-	or die('Could not connect: ' . mysql_error());
-	mysql_select_db('coverage') or die('Could not select database');
-
 	$query = 'SELECT distinct mode_table.mode_name, connType_table.connType_name, coverage_table.comment
 		FROM 
 			coverage.coverage_table, coverage.feature_table, coverage.db_table, coverage.os_table, coverage.agent_version_table, coverage.connType_table, coverage.mode_table
@@ -185,14 +156,9 @@ if( isset($_POST['os']) and isset($_POST['db']) and isset($_POST['feature']))
 			?>	</table><?php
 	}
 }
+
+createFooterMenu();
+createHtmlEpilog();
+databaseDetach();
+
 ?>
-
-
-
-</div>
-<br/><br/><br/><br/><br/>
-<a href="update.php">update form</a>
-<br/>
-<img src="http://www.aws-partner-directory.com/PartnerDirectory/servlet/servlet.FileDownload?retURL=%2FPartnerDirectory%2Fapex%2FPartnerDetail%3FName%3DImperva&file=00P0L00000ZJ9H8UAL">
-</body>
-</html>

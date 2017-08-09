@@ -1,30 +1,14 @@
-<html>
-<head>
-<link rel="stylesheet" type="text/css" href="2nd.css">
-<link rel="stylesheet" type="text/css" href="jordyvanraaij.css">
-</head>
-<body align="center">
-
-
-<div class="form-style-5">
-
-
-<br/>
-<h1>Agents Coverage Tool</h1>
-<br/><br/>
 <?php
-error_reporting(E_ALL ^ E_DEPRECATED);
+require 'common.php';
 
-$link = mysql_connect('10.100.43.225:3306', 'root', 'barbapapa')
-    or die('Could not connect: ' . mysql_error());
-mysql_select_db('coverage') or die('Could not select database');
+databaseAttach();
+createHtmlProlog();
 
-/***********************************OS***************************************/
-// Performing SQL query
+// Database querying:
 $query = 'SELECT * FROM coverage.agent_version_table order by id;';
 $versionResult = mysql_query($query) or die('Query failed: ' . mysql_error());
-$query = 'SELECT * FROM coverage.os_table order by id;';
-$osResult = mysql_query($query) or die('Query failed: ' . mysql_error());
+//$query = 'SELECT * FROM coverage.os_table order by id;';
+//$osResult = mysql_query($query) or die('Query failed: ' . mysql_error());
 $query = 'SELECT * FROM coverage.db_table order by id;';
 $dbResult = mysql_query($query) or die('Query failed: ' . mysql_error());
 $query = 'SELECT * FROM coverage.feature_table order by id;';
@@ -45,24 +29,19 @@ while ($line = mysql_fetch_array($versionResult, MYSQL_BOTH)) {
 	echo "<input type=\"checkbox\" name=\"version[]\" value=$line[0]>$line[1]";
 	echo "<br/>";
 }
-echo "</td><td>";
+echo "</td><td width='15%'>";
 
 // Os combo box
-echo "<b>Platform:</b><br/>";
-while ($line = mysql_fetch_array($osResult, MYSQL_BOTH)) {
-	echo "<input type=\"checkbox\" name=\"os[]\" value=$line[0]>$line[1]";
-	echo "<br/>";
-}
-echo "</td><td>";
+echo "<b>Os:</b><br/>";
+echo "<p id='osCheckBoxesPlaceholder'></p>";
+echo "</td><td width='15%'>";
 
 /***********************************DB***************************************/
 // db combo box
-echo "<b>Database:</b><br/>";
-while ($line = mysql_fetch_array($dbResult, MYSQL_BOTH)) {
-	echo "<input type=\"checkbox\" name=\"db[]\" value=$line[0]>$line[1]";
-	echo "<br/>";
-}
+echo "<b>Os:</b><br/>";
+echo "<p id='dbCheckBoxesPlaceholder'></p>";
 echo "</td><td>";
+
 /***********************************Feature***************************************/
 // feature combo box
 echo "<b>Feature:</b><br/>";
@@ -98,16 +77,14 @@ echo "</td><td>";
 </textarea>
 <input style="width:15%" align="center" type="submit" name="submit" value="Update"></form>
 </p>
+</div>
+
 <?php
 
-// Closing connection
-mysql_close($link);
+createFooterMenu();
+JavaScriptInitilizeInputsDefinitions();
+JavaScriptGenerateInputFields();
+createHtmlEpilog();
+databaseDetach();
+
 ?>
-
-
-
-</div>
-<br/><br/>
-<img src="http://www.aws-partner-directory.com/PartnerDirectory/servlet/servlet.FileDownload?retURL=%2FPartnerDirectory%2Fapex%2FPartnerDetail%3FName%3DImperva&file=00P0L00000ZJ9H8UAL">
-</body>
-</html>
